@@ -1,0 +1,91 @@
+pipeline {
+    agent any
+    
+   
+    stages {
+        stage('Git Clone') {
+            steps {
+                git branch: 'main', url: 'https://github.com/rakshit2309/SIT313-Task5.1.git'
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                echo 'Dependicies Installed'
+                echo 'USing Build Environments'
+            }
+        }
+        stage('Unit Tests') {
+            steps {
+                echo 'Using JUnit to run test'
+                
+            }
+        }
+        stage('Code Analysis') {
+            steps {
+                echo 'Using SonarQube for code analysis'
+                
+            }
+        }
+        stage('Deploy to Staging') {
+            steps {
+                echo 'Deployed to APACHE TOMCAT'
+              
+            }
+        }
+        stage('Integration Tests on Staging') {
+            steps {
+                echo 'up-down integration testing'
+               
+            }
+        }
+        stage('Deploy to Production') {
+            steps {
+                echo 'Deployed to APACHE TOMCAT'
+                
+            }
+        }
+    }
+    
+    post {
+        success {
+            
+            script {
+               
+                def powershellCommand = """
+                    \$SMTPServer = "smtp.gmail.com"
+                    \$SMTPFrom = "rakshit4880.be@chitkara.edu.in"
+                    \$SMTPTo = "rakshit4880.be@chitkara.edu.in"
+                    \$SMTPSubject = "Hello I am Abhinav Sharma"
+                    \$SMTPBody = "Execution Passed"
+                    \$SMTPUsername = "sharmaabhi070204@gmail.com"
+                    \$SMTPPassword = "upbe rtbt pbtv ptmt"
+    
+                    Send-MailMessage -From \$SMTPFrom -to \$SMTPTo -Subject \$SMTPSubject -Body \$SMTPBody -SmtpServer \$SMTPServer -UseSsl -Port 587 -Credential (New-Object System.Management.Automation.PSCredential \$SMTPUsername, (ConvertTo-SecureString -AsPlainText \$SMTPPassword -Force))
+                """
+                powershell(powershellCommand)
+            }
+            
+            echo 'Passed Execution'
+        }
+        failure {
+           
+            script {
+               
+                def powershellCommand = """
+                    \$SMTPServer = "smtp.gmail.com"
+                    \$SMTPFrom = "rakshit4880.be@chitkara.edu.in"
+                    \$SMTPTo = "rakshit4880.be@chitkara.edu.in"
+                    \$SMTPSubject = "FAILURE"
+                    \$SMTPBody = "Execution Failed"
+                    \$SMTPUsername = "sharmaabhi070204@gmail.com"
+                    \$SMTPPassword = "upbe rtbt pbtv ptmt"
+    
+                    Send-MailMessage -From \$SMTPFrom -to \$SMTPTo -Subject \$SMTPSubject -Body \$SMTPBody -SmtpServer \$SMTPServer -UseSsl -Port 587 -Credential (New-Object System.Management.Automation.PSCredential \$SMTPUsername, (ConvertTo-SecureString -AsPlainText \$SMTPPassword -Force))
+                """
+                powershell(powershellCommand)
+            }
+            echo 'Failed Execution'
+        }
+    }
+}
